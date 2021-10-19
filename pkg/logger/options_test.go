@@ -15,13 +15,13 @@ func TestOptions(t *testing.T) {
 	t.Run("default options", func(t *testing.T) {
 		o := DefaultOptions()
 		assert.Equal(t, defaultJSONOutput, o.JSONFormatEnabled)
-		assert.Equal(t, defaultAppId, o.appID)
+		assert.Equal(t, defaultAppID, o.appID)
 		assert.Equal(t, defaultOutputLevel, o.OutputLevel)
 	})
 
 	t.Run("set dapr ID", func(t *testing.T) {
 		o := DefaultOptions()
-		assert.Equal(t, defaultAppId, o.appID)
+		assert.Equal(t, defaultAppID, o.appID)
 
 		o.SetAppID("dapr-app")
 		assert.Equal(t, "dapr-app", o.appID)
@@ -73,13 +73,14 @@ func TestApplyOptionsToLoggers(t *testing.T) {
 	assert.NoError(t, ApplyOptionsToLoggers(&testOptions))
 
 	for _, l := range testLoggers {
+		ll, _ := l.(*Log)
 		assert.Equal(
 			t,
 			"dapr-app",
-			(l.(*Log)).logger.Data[logFieldAppID])
+			ll.logger.Data[logFieldAppID])
 		assert.Equal(
 			t,
 			toLogrusLevel(DebugLevel),
-			(l.(*Log)).logger.Logger.GetLevel())
+			ll.logger.Logger.GetLevel())
 	}
 }

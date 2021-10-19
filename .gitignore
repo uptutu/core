@@ -13,6 +13,8 @@
 
 bin/
 build/
+.devcontainer/
+/dist
 
 # Binary builded
 bin/*
