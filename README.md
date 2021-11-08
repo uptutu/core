@@ -315,7 +315,7 @@ Thank you very much for your feedback and suggestions!
 
 ### 🙌 Contributing
 
-[开发指南](docs/development/developing-tkeel.md) explains how to configure your development environment.
+[The Development Guide](docs/development/developing-tkeel.md) explains how to configure your development environment.
 
 We have this [Code of Conduct](docs/community/code-of-conduct.md) that we expect project participants to follow. Please read it in full so that you know what will and will not be tolerated.
 
