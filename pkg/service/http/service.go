@@ -1,50 +1,51 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/dapr/go-sdk/service/common"
+	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 )
 
-// NewService creates new Service
+// NewService creates new Service.
 func NewService(address string) common.Service {
 	return newServer(address, nil)
 }
 
-// NewServiceWithMux creates new Service with existing http mux
-func NewServiceWithMux(address string, mux *http.ServeMux) common.Service {
+// NewServiceWithMux creates new Service with existing http mux.
+func NewServiceWithMux(address string, mux *mux.Router) common.Service {
 	return newServer(address, mux)
 }
 
-func newServer(address string, mux *http.ServeMux) *Server {
-	if mux == nil {
-		mux = http.NewServeMux()
+func newServer(address string, router *mux.Router) *Server {
+	if router == nil {
+		router = mux.NewRouter()
 	}
 	return &Server{
 		address:            address,
-		mux:                mux,
+		mux:                router,
 		topicSubscriptions: make([]*common.Subscription, 0),
 	}
 }
 
-// Server is the HTTP server wrapping mux many Dapr helpers
+// Server is the HTTP server wrapping mux many Dapr helpers.
 type Server struct {
 	address            string
-	mux                *http.ServeMux
+	mux                *mux.Router
 	topicSubscriptions []*common.Subscription
 }
 
-// Start starts the HTTP handler. Blocks while serving
+// Start starts the HTTP handler. Blocks while serving.
 func (s *Server) Start() error {
 	s.registerSubscribeHandler()
-	server := http.Server{
-		Addr:    s.address,
-		Handler: s.mux,
-	}
-	return server.ListenAndServe()
+	c := negroni.New()
+	c.UseHandler(s.mux)
+	return errors.Unwrap(http.ListenAndServe(s.address, c))
 }
 
-// Stop stops previously started HTTP service
+// Stop stops previously started HTTP service.
 func (s *Server) Stop() error {
 	// TODO: implement service stop
 	return nil

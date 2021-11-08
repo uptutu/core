@@ -73,14 +73,13 @@ func TestEventHandler(t *testing.T) {
 	assert.NoErrorf(t, err, "error adding error event handler")
 
 	s.registerSubscribeHandler()
-
 	makeEventRequest(t, s, "/", data, http.StatusOK)
 	makeEventRequest(t, s, "/", "", http.StatusSeeOther)
-	makeEventRequest(t, s, "/", "not JSON", http.StatusSeeOther)
 	makeEventRequest(t, s, "/errors", data, http.StatusOK)
 }
 
 func makeEventRequest(t *testing.T, s *Server, route, data string, expectedStatusCode int) {
+	t.Helper()
 	req, err := http.NewRequest(http.MethodPost, route, strings.NewReader(data))
 	assert.NoErrorf(t, err, "error creating request: %s", data)
 	req.Header.Set("Content-Type", "application/json")

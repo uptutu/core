@@ -1,0 +1,43 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: client-pubsub
+spec:
+  type: pubsub.redis
+  version: v1
+  metadata:
+    - name: redisHost
+      value: tkeel-middleware-redis-master:6379
+    - name: redisPassword
+      secretKeyRef:
+        name: tkeel-middleware-redis
+        key: redis-password
+scopes:
+  - core
+  - client
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  labels:
+    app: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "client"
+        dapr.io/app-port: "5000"
+    spec:
+      containers:
+      - name: python
+        image: tkeelio/subclient:0.0.1
